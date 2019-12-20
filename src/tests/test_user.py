@@ -3,12 +3,10 @@ import os
 import json
 from ..app import create_app, db
 
-
 class UsersTest(unittest.TestCase):
     """
     Users Test Case
     """
-
     def setUp(self):
         """
         Test Setup
@@ -27,19 +25,16 @@ class UsersTest(unittest.TestCase):
 
     def test_user_creation(self):
         """ test user creation with valid credentials """
-        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         json_data = json.loads(res.data)
         self.assertTrue(json_data.get('jwt_token'))
         self.assertEqual(res.status_code, 201)
 
     def test_user_creation_with_existing_email(self):
         """ test user creation with already existing email"""
-        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         self.assertEqual(res.status_code, 201)
-        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         json_data = json.loads(res.data)
         self.assertEqual(res.status_code, 400)
         self.assertTrue(json_data.get('error'))
@@ -75,11 +70,9 @@ class UsersTest(unittest.TestCase):
 
     def test_user_login(self):
         """ User Login Tests """
-        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         self.assertEqual(res.status_code, 201)
-        res = self.client().post('/api/v1/users/login', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         json_data = json.loads(res.data)
         self.assertTrue(json_data.get('jwt_token'))
         self.assertEqual(res.status_code, 200)
@@ -90,11 +83,9 @@ class UsersTest(unittest.TestCase):
             'password': 'olawale',
             'email': 'olawale@mail.com',
         }
-        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         self.assertEqual(res.status_code, 201)
-        res = self.client().post('/api/v1/users/login', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(user1))
+        res = self.client().post('/api/v1/users/login', headers={'Content-Type': 'application/json'}, data=json.dumps(user1))
         json_data = json.loads(res.data)
         self.assertFalse(json_data.get('jwt_token'))
         self.assertEqual(json_data.get('error'), 'invalid credentials')
@@ -106,11 +97,9 @@ class UsersTest(unittest.TestCase):
             'password': 'passw0rd!',
             'email': 'olawale1111@mail.com',
         }
-        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         self.assertEqual(res.status_code, 201)
-        res = self.client().post('/api/v1/users/login', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(user1))
+        res = self.client().post('/api/v1/users/login', headers={'Content-Type': 'application/json'}, data=json.dumps(user1))
         json_data = json.loads(res.data)
         self.assertFalse(json_data.get('jwt_token'))
         self.assertEqual(json_data.get('error'), 'invalid credentials')
@@ -118,12 +107,10 @@ class UsersTest(unittest.TestCase):
 
     def test_user_get_me(self):
         """ Test User Get Me """
-        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         self.assertEqual(res.status_code, 201)
         api_token = json.loads(res.data).get('jwt_token')
-        res = self.client().get('/api/v1/users/me',
-                                headers={'Content-Type': 'application/json', 'api-token': api_token})
+        res = self.client().get('/api/v1/users/me', headers={'Content-Type': 'application/json', 'api-token': api_token})
         json_data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(json_data.get('email'), 'olawale@mail.com')
@@ -134,25 +121,20 @@ class UsersTest(unittest.TestCase):
         user1 = {
             'name': 'new name'
         }
-        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         self.assertEqual(res.status_code, 201)
         api_token = json.loads(res.data).get('jwt_token')
-        res = self.client().put('/api/v1/users/me',
-                                headers={'Content-Type': 'application/json', 'api-token': api_token},
-                                data=json.dumps(user1))
+        res = self.client().put('/api/v1/users/me', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(user1))
         json_data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(json_data.get('name'), 'new name')
 
     def test_delete_user(self):
         """ Test User Delete """
-        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'},
-                                 data=json.dumps(self.user))
+        res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
         self.assertEqual(res.status_code, 201)
         api_token = json.loads(res.data).get('jwt_token')
-        res = self.client().delete('/api/v1/users/me',
-                                   headers={'Content-Type': 'application/json', 'api-token': api_token})
+        res = self.client().delete('/api/v1/users/me', headers={'Content-Type': 'application/json', 'api-token': api_token})
         self.assertEqual(res.status_code, 204)
 
     def tearDown(self):
@@ -162,7 +144,6 @@ class UsersTest(unittest.TestCase):
         with self.app.app_context():
             db.session.remove()
             db.drop_all()
-
 
 if __name__ == "__main__":
     unittest.main()
