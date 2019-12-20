@@ -166,7 +166,3 @@ class UsersTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-raw
-test_user1.py
-hoste
